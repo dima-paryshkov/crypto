@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 
-def getPrimeNumberDefoultList(n):
+def getPrimeNumberDefoultList():
     listprime=[]
      
     for i in range(2, 2000):
@@ -40,7 +40,7 @@ def MillerRabin(n, s = 50, numberOfIteration = 0):
 
 def getPrimenumber(n, t = 50):
     isPrime = True
-    listPrime = getPrimeNumberDefoultList(n)
+    listPrime = getPrimeNumberDefoultList()
     numberOfIteration = 0
     start_time = datetime.now()
     while (isPrime):
@@ -59,6 +59,25 @@ def getPrimenumber(n, t = 50):
     end_time = datetime.now() - start_time
     return primeNumber, end_time, numberOfIteration
 
+def getPrimenumberInRange(a, b, numberOfIteration = 0, t = 50):
+    primes = []
+    listPrime = getPrimeNumberDefoultList()
+    for i in range(a,b):
+        k = 0
+        for j in listPrime:
+            numberOfIteration += 1
+            if (i % j == 0): 
+                break
+            else: 
+                k+=1
+        if (k == listPrime.__len__()):
+            isPrime, numberOfIteration = MillerRabin(i, t, numberOfIteration)
+            if (isPrime == False):
+                primes.append(i)
+    return primes
+
+
+
 def main():
     n = 256
     t = 50
@@ -66,7 +85,5 @@ def main():
     print(primeNumber)
     print(time)
     print(numberOfIteration)
-    # print(getPrimenumber(13, 10))
-    # print(MillerRabin(11, 10))
 
 main()
