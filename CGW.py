@@ -1,5 +1,7 @@
 import random
 from datetime import datetime
+from random import randint
+import PySimpleGUI as sg
 
 def getPrimeNumberDefoultList():
     listprime=[]
@@ -87,12 +89,24 @@ def gcd(a,b):
             b = b - a
     return a
 
-def primitive_root(modulo):
+def primitiveRoot(modulo):
+    result=[]
     required_set = set(num for num in range (1, modulo) if gcd(num, modulo) == 1)
     for g in range(1, modulo):
+        if result.__len__() == 100: break
         actual_set = set(pow(g, powers) % modulo for powers in range (1, modulo))
         if required_set == actual_set:
-            print(g)
+            return g
+
+def primitiveRootList(modulo):
+    result=[]
+    required_set = set(num for num in range (1, modulo) if gcd(num, modulo) == 1)
+    for g in range(1, modulo):
+        if result.__len__() == 100: break
+        actual_set = set(pow(g, powers) % modulo for powers in range (1, modulo))
+        if required_set == actual_set:
+            result.append(g)
+    return result
 
 def main():
     n = 256
@@ -101,7 +115,42 @@ def main():
     # print(primeNumber)
     # print(time)
     # print(numberOfIteration)
-    primitive_root(27)
+
+
+    # task 3
+    p, tmp1, tmp2 = getPrimenumber(10, 50)
+    g = primitiveRoot(p)
+
+    alice_private = randint(999, 999999)
+    bob_private = randint(999, 999999)
+
+
+
+    # Generating public keys
+    alice_public = pow(g, alice_private) % p
+    bob_public = pow(g, bob_private) % p
+
+    alice_key = (pow(bob_public, alice_private)) % p
+    bob_key = (pow(alice_public, bob_private)) % p
+
+    layout = [
+    [sg.Text('Number of checks:'), sg.InputText()],
+    [sg.Text('Number of bits:'), sg.InputText(), sg.Button('Generate prime number', expand_x=100)],
+    [sg.Text('a '), sg.InputText(), sg.Text('b '), sg.InputText(), sg.Button('Generate prime numbers in range (a,b)', expand_x=100)],
+    [sg.Text('Generated sequence:')],
+    [sg.MLine(key='-ML1-'+sg.WRITE_ONLY_KEY, size=(88,10))],
+    [sg.Text('Test results:'), sg.Button('Run tests', expand_x=100)],
+    [sg.MLine(key='-ML2-'+sg.WRITE_ONLY_KEY, size=(88,10))]
+    ]
+    window = sg.Window('RSA', layout, grab_anywhere=True)
+    while True:                             # The Event Loop
+        event, values = window.read()
+        # print(event, values) #debug-
+        if event in (None, 'Exit', 'Cancel'):
+            break
+        if event == 'Generate':
+            event, values = window.read()
+            
 
 
 
