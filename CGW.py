@@ -25,7 +25,7 @@ def toBinary(n):
 
 def MillerRabin(n, s = 50, numberOfIteration = 0): 
     for j in range(0, s):
-        a = random.randint(1, n - 1)
+        a = randint(1, n - 1)
         b = toBinary(n - 1)
         d = 1
         for i in range(len(b) - 1, -1, -1):
@@ -70,7 +70,7 @@ def getPrimenumberInRange(a, b, numberOfIteration = 0, t = 50):
         k = 0
         for j in listPrime:
             numberOfIteration += 1
-            if (i % j == 0): 
+            if (i % j == 0 and i // j != 1): 
                 break
             else: 
                 k+=1
@@ -135,21 +135,45 @@ def main():
 
     layout = [
     [sg.Text('Number of checks:'), sg.InputText()],
-    [sg.Text('Number of bits:'), sg.InputText(), sg.Button('Generate prime number', expand_x=100)],
-    [sg.Text('a '), sg.InputText(), sg.Text('b '), sg.InputText(), sg.Button('Generate prime numbers in range (a,b)', expand_x=100)],
-    [sg.Text('Generated sequence:')],
-    [sg.MLine(key='-ML1-'+sg.WRITE_ONLY_KEY, size=(88,10))],
-    [sg.Text('Test results:'), sg.Button('Run tests', expand_x=100)],
-    [sg.MLine(key='-ML2-'+sg.WRITE_ONLY_KEY, size=(88,10))]
+    [sg.Text('Number of bits:     '), sg.InputText()],
+    [sg.Button('Generate prime number', expand_x=20)],
+    [sg.Text('a '), sg.InputText()],
+    [sg.Text('b '), sg.InputText()],
+    [sg.Button('Generate prime numbers in range (a,b)', expand_x=20)],
+    [sg.Text('Prime number(s):')],
+    [sg.MLine(key='-ML1-'+sg.WRITE_ONLY_KEY, size=(88,10))]
     ]
-    window = sg.Window('RSA', layout, grab_anywhere=True)
+
+
+    window = sg.Window('Prime numbers', layout, grab_anywhere=True)
     while True:                             # The Event Loop
         event, values = window.read()
         # print(event, values) #debug-
         if event in (None, 'Exit', 'Cancel'):
             break
-        if event == 'Generate':
+        if event == 'Generate prime number':
             event, values = window.read()
+            if values[0]=='' or values[1]=='':
+                window['-ML1-'+sg.WRITE_ONLY_KEY].Update('')
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print('Incorrect input data')
+            else:
+                window['-ML1-'+sg.WRITE_ONLY_KEY].Update('')
+                primeNumber, time, numberOfIteration = getPrimenumber(int(values[1]), int(values[0]))
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print(primeNumber)
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print(f" Time: {time}")
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print(f" Number of iteration: {numberOfIteration}")
+            
+        if event == 'Generate prime numbers in range (a,b)':
+            event, values = window.read()
+            if values[2]=='' or values[3]=='':
+                window['-ML1-'+sg.WRITE_ONLY_KEY].Update('')
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print('Incorrect input data')
+            else:
+                window['-ML1-'+sg.WRITE_ONLY_KEY].Update('')
+                primeNumber, time, numberOfIteration = getPrimenumberInRange(int(values[2]), int(values[3]))
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print(primeNumber)
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print(f" Time: {time}")
+                window['-ML1-'+sg.WRITE_ONLY_KEY].print(f" Number of iteration: {numberOfIteration}")
             
 
 
