@@ -23,8 +23,9 @@ def toBinary(n):
         n = n / 2
         return r
 
-def MillerRabin(n, s = 50, numberOfIteration = 0): 
+def MillerRabin(n = 2, s = 50, numberOfIteration = 0): 
     for j in range(0, s):
+        if (n < 2): n = 2
         a = randint(1, n - 1)
         b = toBinary(n - 1)
         d = 1
@@ -93,46 +94,22 @@ def primitiveRoot(modulo):
     result=[]
     required_set = set(num for num in range (1, modulo) if gcd(num, modulo) == 1)
     for g in range(1, modulo):
-        if result.__len__() == 100: break
         actual_set = set(pow(g, powers) % modulo for powers in range (1, modulo))
         if required_set == actual_set:
             return g
 
 def primitiveRootList(modulo):
     result=[]
+    start_time = datetime.now()
     required_set = set(num for num in range (1, modulo) if gcd(num, modulo) == 1)
     for g in range(1, modulo):
         if result.__len__() == 100: break
         actual_set = set(pow(g, powers) % modulo for powers in range (1, modulo))
         if required_set == actual_set:
             result.append(g)
-    return result
+    return result, datetime.now() - start_time
 
 def main():
-    n = 256
-    t = 50
-    # primeNumber, time, numberOfIteration = getPrimenumber(n, t)
-    # print(primeNumber)
-    # print(time)
-    # print(numberOfIteration)
-
-
-    # task 3
-    p, tmp1, tmp2 = getPrimenumber(10, 50)
-    g = primitiveRoot(p)
-
-    alice_private = randint(999, 999999)
-    bob_private = randint(999, 999999)
-
-
-
-    # Generating public keys
-    alice_public = pow(g, alice_private) % p
-    bob_public = pow(g, bob_private) % p
-
-    alice_key = (pow(bob_public, alice_private)) % p
-    bob_key = (pow(alice_public, bob_private)) % p
-
     layout = [
     [sg.Text('Number of checks:'), sg.InputText()],
     [sg.Text('Number of bits:     '), sg.InputText()],
@@ -144,8 +121,34 @@ def main():
     [sg.MLine(key='-ML1-'+sg.WRITE_ONLY_KEY, size=(88,10))]
     ]
 
+    layout2 = [
+    [sg.T('Number:\t'), sg.In(key='pr', size=(61, 1))],
+    [sg.Button('Get primitive roots', expand_x=20)],
+    [sg.Text('Primitive root:')],
+    [sg.MLine(key='-ML2-'+sg.WRITE_ONLY_KEY, size=(88,10))]
+    ]
 
-    window = sg.Window('Prime numbers', layout, grab_anywhere=True)
+    layout3 = [
+    [sg.Button('Get', expand_x=20)],
+    [sg.Text('Result:')],
+    [sg.MLine(key='-ML3-'+sg.WRITE_ONLY_KEY, size=(88,10))]
+    ]
+
+    layoutOut = [
+                    [   
+                        sg.TabGroup(
+                                        [[
+                                            sg.Tab('Big prime number', layout, tooltip='tip'), 
+                                            sg.Tab('Primitive root', layout2, tooltip='tip'),  
+                                            sg.Tab('Diffie-Hellman', layout3, tooltip='tip')  
+                                        ]], tooltip='TIP2'
+                                    )
+                    ] 
+                ]
+
+
+    window = sg.Window('Prime numbers', layoutOut, grab_anywhere=True, finalize=True)
+
     while True:                             # The Event Loop
         event, values = window.read()
         # print(event, values) #debug-
@@ -174,6 +177,44 @@ def main():
                 window['-ML1-'+sg.WRITE_ONLY_KEY].print(primeNumber)
                 window['-ML1-'+sg.WRITE_ONLY_KEY].print(f" Time: {time}")
                 window['-ML1-'+sg.WRITE_ONLY_KEY].print(f" Number of iteration: {numberOfIteration}")
+        
+        if event == 'Get primitive roots':
+            event, values = window.read()
+            if values['pr']=='':
+                window['-ML2-'+sg.WRITE_ONLY_KEY].Update('')
+                window['-ML2-'+sg.WRITE_ONLY_KEY].print('Incorrect input data')
+            else:
+                window['-ML2-'+sg.WRITE_ONLY_KEY].Update('')
+                pl, time = primitiveRootList(int(values['pr']))
+                window['-ML2-'+sg.WRITE_ONLY_KEY].print(pl)
+                window['-ML2-'+sg.WRITE_ONLY_KEY].print(f"Time: {time}")
+
+        if event == 'Get':
+            p, tmp1, tmp2 = getPrimenumber(10, 50)
+            g = primitiveRoot(p)
+
+            alice_private = randint(999, 999999)
+            bob_private = randint(999, 999999)
+
+            # Generating public keys
+            alice_public = pow(g, alice_private) % p
+            bob_public = pow(g, bob_private) % p
+
+            alice_key = (pow(bob_public, alice_private)) % p
+            bob_key = (pow(alice_public, bob_private)) % p
+
+            window['-ML3-'+sg.WRITE_ONLY_KEY].Update('')
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"p = {p}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"g = {g}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Alice private key = {alice_private}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Bob private key = {bob_private}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Alice public key = {alice_public}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Bob public key = {bob_public}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Alice key = {alice_key}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Bob key = {bob_key}")
+
+
+
             
 
 
