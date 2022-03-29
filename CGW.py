@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 def getPrimeNumberDefoultList(n):
     listprime=[]
@@ -15,50 +16,57 @@ def getPrimeNumberDefoultList(n):
 
 def toBinary(n):
     r = []
-    # add 1 to the end
-    r.append(1)
-    n = n // 2
-    while (n != 1):
-        if (n // 2 == 1):
-            r.append(1)
-            return r
+    while (n > 0):
         r.append(n % 2)
-        n = n // 2
-    return r
+        n = n / 2
+        return r
 
-def MillerRabin(n, s = 50):  
-    b = toBinary(n - 1)
-    for j in range(1, s + 1):
-            a = random.randint(1, n - 1)
-            d = 1
-            for i in range(len(b) - 1, -1, -1):
-                x = d
-                d = (d * d) % n
-                if d == 1 and x != 1 and x != n - 1:
-                    return False # Составное
-                if b[i] == 1:
-                    d = (d * a) % n
-                    if d != 1:
-                        return False # Составное
-                    return True # Простое
+def MillerRabin(n, s = 50, numberOfIteration = 0): 
+    for j in range(0, s):
+        a = random.randint(1, n - 1)
+        b = toBinary(n - 1)
+        d = 1
+        for i in range(len(b) - 1, -1, -1):
+            x = d
+            numberOfIteration += 1
+            d = (d * d) % n
+            if d == 1 and x != 1 and x != n - 1:
+                return True, numberOfIteration # Составное
+            if b[i] == 1:
+                d = (d * a) % n
+                if d != 1:
+                    return True, numberOfIteration # Составное
+    return False, numberOfIteration # Простое
 
-def getPrimenumber(n, t):
+def getPrimenumber(n, t = 50):
     isPrime = True
     listPrime = getPrimeNumberDefoultList(n)
+    numberOfIteration = 0
+    start_time = datetime.now()
     while (isPrime):
         primeNumber = random.getrandbits(n)
+        if (n % 2 == 0):
+            n += 1
+        k = 0
         for i in listPrime:
-            if (primeNumber % i == 0):
-                break
-        isPrime =  MillerRabin(primeNumber, t)
+            numberOfIteration += 1
+            if (primeNumber % i == 0): break
+            else: k+=1
+        lenght = listPrime.__len__()
+        if (k == lenght):
+            isPrime, numberOfIteration =  MillerRabin(primeNumber, t, numberOfIteration)
 
-    return primeNumber
+    end_time = datetime.now() - start_time
+    return primeNumber, end_time, numberOfIteration
 
 def main():
-    n = random.getrandbits(8)
-    t = 5
-    primeNumber = getPrimenumber(n, t)
+    n = 256
+    t = 50
+    primeNumber, time, numberOfIteration = getPrimenumber(n, t)
     print(primeNumber)
-
+    print(time)
+    print(numberOfIteration)
+    # print(getPrimenumber(13, 10))
+    # print(MillerRabin(11, 10))
 
 main()
