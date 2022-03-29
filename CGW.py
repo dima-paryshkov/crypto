@@ -62,6 +62,8 @@ def getPrimenumber(n, t = 50):
 def getPrimenumberInRange(a, b, numberOfIteration = 0, t = 50):
     primes = []
     listPrime = getPrimeNumberDefoultList()
+    numberOfIteration = 0
+    start_time = datetime.now()
     for i in range(a,b):
         k = 0
         for j in listPrime:
@@ -74,16 +76,33 @@ def getPrimenumberInRange(a, b, numberOfIteration = 0, t = 50):
             isPrime, numberOfIteration = MillerRabin(i, t, numberOfIteration)
             if (isPrime == False):
                 primes.append(i)
-    return primes
+    end_time = datetime.now() - start_time
+    return primes, end_time, numberOfIteration
 
+def gcd(a,b):
+    while a != b:
+        if a > b:
+            a = a - b
+        else:
+            b = b - a
+    return a
 
+def primitive_root(modulo):
+    required_set = set(num for num in range (1, modulo) if gcd(num, modulo) == 1)
+    for g in range(1, modulo):
+        actual_set = set(pow(g, powers) % modulo for powers in range (1, modulo))
+        if required_set == actual_set:
+            print(g)
 
 def main():
     n = 256
     t = 50
-    primeNumber, time, numberOfIteration = getPrimenumber(n, t)
-    print(primeNumber)
-    print(time)
-    print(numberOfIteration)
+    # primeNumber, time, numberOfIteration = getPrimenumber(n, t)
+    # print(primeNumber)
+    # print(time)
+    # print(numberOfIteration)
+    primitive_root(27)
+
+
 
 main()
