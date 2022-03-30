@@ -192,19 +192,19 @@ def main():
         if event == 'Get':
             p, tmp1, tmp2 = getPrimenumber(10, 50)
             g = primitiveRoot(p)
-
-            alice_private = randint(999, 999999)
-            bob_private = randint(999, 999999)
+            if (p == 1): p, tmp1, tmp2 = getPrimenumber(10, 50)
+            alice_private = randint(1, p - 1)
+            bob_private = randint(1, p - 1)
 
             # Generating public keys
-            alice_public = pow(g, alice_private) % p
-            bob_public = pow(g, bob_private) % p
+            alice_public = pow(g, alice_private, p)
+            bob_public = pow(g, bob_private, p)
 
             alice_key = (pow(bob_public, alice_private)) % p
             bob_key = (pow(alice_public, bob_private)) % p
 
             window['-ML3-'+sg.WRITE_ONLY_KEY].Update('')
-            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"p = {p}")
+            window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"n = {p}")
             window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"g = {g}")
             window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Alice private key = {alice_private}")
             window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Bob private key = {bob_private}")
@@ -212,11 +212,5 @@ def main():
             window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Bob public key = {bob_public}")
             window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Alice key = {alice_key}")
             window['-ML3-'+sg.WRITE_ONLY_KEY].print(f"Bob key = {bob_key}")
-
-
-
-            
-
-
 
 main()
