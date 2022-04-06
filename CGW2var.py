@@ -1,8 +1,5 @@
 import PySimpleGUI as sg
 from Crypto.Util import number
-import base32hex
-import hashlib
-from Crypto.Cipher import DES
 import SymmetricCipher
 import os
 import base64
@@ -77,8 +74,8 @@ layout =  [
                 [sg.T('d\t'), sg.In(key='d', size=(70, 1))],
                 [sg.Text('_'  * 100, size=(30, 1)), sg.T('Initial data'), sg.Text('_'  * 100, size=(29, 1))], 
                 [sg.T('Key\t'), sg.In(key='Key', size=(70, 1))],
-                [sg.T('IV\t'), sg.In(key='IV', size=(70, 1))],
-                [sg.Push(), sg.Button('Generate new key and initialization vector'), sg.Button('Encrypt')],
+                # [sg.T('IV\t'), sg.In(key='IV', size=(70, 1))],
+                [sg.Push(), sg.Button('Generate new key'), sg.Button('Encrypt')],
                 [sg.Text('_'  * 100, size=(70, 1))],
                 [sg.Push(), sg.T('File content'), sg.Push()], 
                 [sg.MLine(key='File_content', size=(78,5))], 
@@ -90,24 +87,24 @@ layout =  [
 
 window = sg.Window('Chiper RSA + DES', layout, grab_anywhere=True, finalize=True)
 
-key = SymmetricCipher.load_key()
-iv = SymmetricCipher.load_iv()
-window['Key'].Update(key)
-window['IV'].Update(base64.b64encode(iv).decode('cp1251'))
+# key = SymmetricCipher.load_key()
+# iv = SymmetricCipher.load_iv()
+# window['Key'].Update(key)
+# window['IV'].Update(base64.b64encode(iv).decode('cp1251'))
 
 while True:
     event, values = window.read()  
     if event == sg.WIN_CLOSED:       
         break  
 
-    if event == 'Generate new key and initialization vector':
+    if event == 'Generate new key':
         SymmetricCipher.write_key()
         SymmetricCipher.write_iv()
         
         key = SymmetricCipher.load_key()
         iv = SymmetricCipher.load_iv()
         window['Key'].Update(key) 
-        window['IV'].Update(base64.b64encode(iv).decode('cp1251'))
+        # window['IV'].Update(base64.b64encode(iv).decode('cp1251'))
 
     if event == 'Encrypt':
         p = number.getPrime(128)
